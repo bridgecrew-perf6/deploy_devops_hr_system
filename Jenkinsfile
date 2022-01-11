@@ -4,9 +4,9 @@ pipeline {
     stages {
         stage('Git Clone') {
             steps{
-                git branch: 'master', 
+                git branch: 'main', 
                 credentialsId: 'github_credential', 
-                url: 'https://github.com/phokhaing/devops_hr_system.git'
+                url: 'https://github.com/phokhaing/deploy_devops_hr_system.git'
             }
         }
         
