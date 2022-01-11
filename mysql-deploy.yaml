@@ -1,0 +1,59 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mysql-deploy
+  labels:
+    app: mysql
+spec:
+  replicas: 2 # 2 pod
+  selector:
+    matchLabels:
+      app: mysql # match below pod_label_name
+  template:
+    metadata:
+      name: mysql-pod # pod name
+      labels:
+        app: mysql # pod_label_name
+    spec:
+      containers:
+        - name: mysql-container
+          image: mysql
+          env:
+            - name: MYSQL_DATABASE
+              valueFrom:
+                secretKeyRef:
+                  name: mysql # name from mysql-secret.yaml
+                  key: database # key from mysql-secret.yaml
+            - name: MYSQL_ROOT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: mysql # name from mysql-secret.yaml
+                  key: password # key from mysql-secret.yaml
+            - name: MYSQL_ALLOW_EMPTY_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: mysql # name from mysql-secret.yaml
+                  key: empty # key from mysql-secret.yaml
+          ports:
+            - containerPort: 3306 # 3306 default port mysql
+          volumeMounts:
+            - name: mysql-persistent-storage
+              mountPath: /var/lib/mysql # default path mysql
+      volumes:
+        - name: mysql-persistent-storage
+          persistentVolumeClaim:
+            claimName: mysql-pv-claim # mysql-pv-claim is name of mysql-pv.yamល
+---
+# Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: mysql-service # service_name
+spec:
+  type: ClusterIP
+  selector:
+    app: mysql # must match pod_label_name of mysql-deploy
+  ports:
+    - protocol: TCP
+      port: 3306
+      targetPort: 3306
