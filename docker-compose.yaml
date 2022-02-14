@@ -33,5 +33,7 @@ services:
     #     restart: always
     #     environment:
     #         PMA_HOST: db
+    #          # Default value is 2048K, this will change upload_max_filesize and post_max_size values https://github.com/phpmyadmin/docker)
+    #          UPLOAD_LIMIT: 512M # 0.5 GB
     #     depends_on:
     #         - db
